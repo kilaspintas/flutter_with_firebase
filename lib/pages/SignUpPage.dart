@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter_with_firebase/pages/HomePage.dart';
 import 'package:flutter_with_firebase/pages/SignInPage.dart';
+import 'package:flutter_with_firebase/services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -17,6 +17,8 @@ class _SignUpPage extends State<SignUpPage>{
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool circular = false;
+
+  Auth authClass = Auth();
 
   @override
   Widget build(BuildContext context){
@@ -43,7 +45,10 @@ class _SignUpPage extends State<SignUpPage>{
               buttonItem(
                 "assets/google.svg",
                 "Continue with Google",
-                25
+                25,
+                  ()async{
+                    await authClass.googleSignIn(context);
+                  },
               ),
               SizedBox(
                 height: 15,
@@ -51,7 +56,10 @@ class _SignUpPage extends State<SignUpPage>{
               buttonItem(
                 "assets/phone.svg",
                 "Continue with Mobile",
-                30
+                30,
+                  ()async{
+
+                  },
               ),
               SizedBox(
                 height: 15,
@@ -116,7 +124,9 @@ class _SignUpPage extends State<SignUpPage>{
         setState(() {
           circular = false;
         });
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (builder) => SignInPage()), (route) => false);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+            builder: (builder) => SignInPage()),
+                (route) => false);
       },
       child: Container(
         width: MediaQuery.of(context).size.width - 90,
@@ -141,36 +151,39 @@ class _SignUpPage extends State<SignUpPage>{
     );
   }
 
-  Widget buttonItem(String pict, String namaTombol, double size){
-    return SizedBox(
-      width: MediaQuery.of(context).size.width - 60,
-      height: 60,
-      child: Card(
-        color: Colors.black,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: BorderSide(
-            width: 1,
-            color: Colors.grey,
+  Widget buttonItem(String pict, String namaTombol, double size, VoidCallback onTap){
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: MediaQuery.of(context).size.width - 60,
+        height: 60,
+        child: Card(
+          color: Colors.black,
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: BorderSide(
+              width: 1,
+              color: Colors.grey,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              pict,
-              height: size,
-              width: size,
-            ),
-            SizedBox(
-              width: 15,
-            ),
-            Text(namaTombol, style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-            ),)
-          ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                pict,
+                height: size,
+                width: size,
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Text(namaTombol, style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+              ),)
+            ],
+          ),
         ),
       ),
     );
@@ -212,3 +225,4 @@ class _SignUpPage extends State<SignUpPage>{
     );
   }
 }
+
