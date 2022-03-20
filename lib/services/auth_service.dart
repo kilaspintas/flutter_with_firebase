@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_with_firebase/pages/HomePage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Auth{
   final GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -12,6 +14,8 @@ class Auth{
   );
 
   FirebaseAuth auth = FirebaseAuth.instance;
+  final storage = new FlutterSecureStorage();
+
   Future<void> googleSignIn(BuildContext context) async{
     try{
       GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
@@ -25,6 +29,7 @@ class Auth{
 
       try{
         UserCredential userCredential = await auth.signInWithCredential(credential);
+        storeTokenData(userCredential);
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
             builder: (builder) => const HomePage()),
                 (route) => false);
@@ -40,6 +45,25 @@ class Auth{
     }catch(e){
       final snackBar = SnackBar(content: Text(e.toString()));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  Future<void> storeTokenData(UserCredential userCredential) async {
+    await storage.write(key: "token", value: userCredential.credential?.token.toString());
+    await storage.write(key: "userCredential", value: userCredential.toString());
+  }
+
+  Future<String?> getToken() async {
+    return await storage.read(key: "token");
+  }
+  
+  Future<void> logout() async{
+    try{
+      await _googleSignIn.signOut();
+      await auth.signOut();
+      await storage.delete(key: "token");
+    }catch(e){
+      
     }
   }
 }

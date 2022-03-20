@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_with_firebase/pages/HomePage.dart';
+import 'package:flutter_with_firebase/pages/SignUpPage.dart';
+import 'package:flutter_with_firebase/services/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -16,6 +18,8 @@ class _SignInPage extends State<SignInPage>{
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool circular = false;
+
+  Auth authClass = Auth();
 
   @override
   Widget build(BuildContext context){
@@ -42,7 +46,10 @@ class _SignInPage extends State<SignInPage>{
               buttonItem(
                   "assets/google.svg",
                   "Continue with Google",
-                  25
+                  25,
+                    ()async{
+                  await authClass.googleSignIn(context);
+                },
               ),
               SizedBox(
                 height: 15,
@@ -50,7 +57,10 @@ class _SignInPage extends State<SignInPage>{
               buttonItem(
                   "assets/phone.svg",
                   "Continue with Mobile",
-                  30
+                  30,
+                    (){
+
+                },
               ),
               SizedBox(
                 height: 15,
@@ -77,17 +87,22 @@ class _SignInPage extends State<SignInPage>{
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text("Don't have an account? ",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 18),),
-                  Text("SignUp",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),)
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                          builder: (builder) => const SignUpPage()),
+                              (route) => false);
+                    },
+                    child: new Text('SignUp', style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),),
+                  )
                 ],
               ),
               SizedBox(
@@ -147,36 +162,39 @@ class _SignInPage extends State<SignInPage>{
     );
   }
 
-  Widget buttonItem(String pict, String namaTombol, double size){
-    return SizedBox(
-      width: MediaQuery.of(context).size.width - 60,
-      height: 60,
-      child: Card(
-        color: Colors.black,
-        elevation: 8,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: BorderSide(
-            width: 1,
-            color: Colors.grey,
+  Widget buttonItem(String pict, String namaTombol, double size, VoidCallback onTap){
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width - 60,
+        height: 60,
+        child: Card(
+          color: Colors.black,
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: BorderSide(
+              width: 1,
+              color: Colors.grey,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              pict,
-              height: size,
-              width: size,
-            ),
-            SizedBox(
-              width: 15,
-            ),
-            Text(namaTombol, style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-            ),)
-          ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                pict,
+                height: size,
+                width: size,
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Text(namaTombol, style: TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+              ),)
+            ],
+          ),
         ),
       ),
     );

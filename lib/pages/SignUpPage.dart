@@ -91,12 +91,17 @@ class _SignUpPage extends State<SignUpPage>{
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18),),
-                  Text("Login",
-                    style: TextStyle(
-                        color: Colors.white,
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                          builder: (builder) => const SignInPage()),
+                              (route) => false);
+                    },
+                    child: new Text('SignIn', style: TextStyle(
                         fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),)
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),),
+                  )
                 ],
               )
             ],

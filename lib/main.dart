@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter_with_firebase/pages/HomePage.dart';
 import 'package:flutter_with_firebase/pages/SignInPage.dart';
 import 'package:flutter_with_firebase/pages/SignUpPage.dart';
+import 'package:flutter_with_firebase/services/auth_service.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +20,29 @@ class MyApp extends StatefulWidget {
 
 }
 
-class _MyAppState extends State<MyApp>{
-  firebase_auth.FirebaseAuth firebaseAuth = firebase_auth.FirebaseAuth.instance;
+class _MyAppState extends State<MyApp> {
+  Widget currentPage = SignUpPage();
+  Auth authClass = Auth();
 
   @override
-  Widget build(BuildContext context){
-    return const MaterialApp(
-      home: SignUpPage(),
+  void initState() {
+    super.initState();
+    checkLogin();
+  }
+
+  void checkLogin() async{
+    String? token = await authClass.getToken();
+    if(token!=null){
+      setState(() {
+        currentPage = HomePage();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: currentPage,
     );
   }
 }
